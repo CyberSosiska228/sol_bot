@@ -12,6 +12,8 @@ pg_connection = psycopg2.connect(database=settings["postgres_settings"]["databas
                                  user=settings["postgres_settings"]["user"],
                                  password=settings["postgres_settings"]["password"],
                                  port=settings["postgres_settings"]["port"])
+print(pg_connection)
+
 
 bot = telebot.TeleBot(settings["token"])
 
@@ -32,7 +34,7 @@ def login(message):
         username = lst[1]
         password = lst[2]
     except:
-        bot.send_message(message.from_user.id, "Error")
+        bot.send_message(message.from_user.id, "Error, check the format of input")
         return
 
     try:
@@ -41,16 +43,16 @@ def login(message):
         res = cursor.fetchone()
 
         if (res == None):
-            cursor.execute(f"INSERT INTO users (user_id, login, password, solves) VALUES ({message.from_user.id}, {username}, {password}, 0)")
+            cursor.execute(f"INSERT INTO users (user_id, login, password, solves) VALUES ({message.from_user.id}, \'{username}\', \'{password}\', 0)")
             pg_connection.commit()
             print(f"Added user {message.from_user.id}")
         else:
-            cursor.execute(f"UPDATE users SET login = '{username}', password = '{password}' WHERE user_id = {message.from_user.id}")
+            cursor.execute(f"UPDATE users SET login = \'{username}\', password = \'{password}\' WHERE user_id = {message.from_user.id}")
             pg_connection.commit()
             print(f"Updated user {message.from_user.id}")
         bot.send_message(message.from_user.id, f"Username: {username}\nPassword: {password}\nSet!")
     except:
-        bot.send_message(message.from_user.id, f"Error, make sure, that imput is correct. If necessary, please contact admins")
+        bot.send_message(message.from_user.id, f"Error, make sure, that input is correct. If necessary, please contact admins")
 
 
 def solve_test(message):
@@ -73,7 +75,7 @@ def solve_test(message):
         pg_connection.commit()
         bot.send_message(message.from_user.id, f"Done, no errors arise")
     except:
-        bot.send_message(message.from_user.id, f"Error, make sure, that imput is correct. If necessary, please contact admins")
+        bot.send_message(message.from_user.id, f"Error, make sure, that input is correct. If necessary, please contact admins")
 
 
 def check_admin(message):

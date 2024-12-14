@@ -222,4 +222,3 @@ def solve(username, password, test_id):
         return (0, "")
     else:
         return (1, error)
-
